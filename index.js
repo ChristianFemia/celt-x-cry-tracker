@@ -36,7 +36,11 @@ const userSchema = mongoose.Schema({
             }
         }
     },
-    password: String,
+    password: String
+});
+
+const crySchema = new mongoose.Schema({
+    user: ObjectId,
     cry: {
         cryCount: String,
         reason: String,
@@ -47,7 +51,7 @@ const userSchema = mongoose.Schema({
 
 
 var userModel = mongoose.model('users', userSchema);
-
+var cryModel = mongoose.model('cry', crySchema)
 
 app.get('/', function (req, res) {
     if (!req.session.user) {
@@ -131,7 +135,6 @@ app.post('/register', function (req, res) {
 });
 
 app.get('/addCry', function (req, res) {
-    console.log(req.session.user);
     if (!req.session.user) {
         return res.redirect('/login');
     } else {
@@ -153,15 +156,16 @@ app.post('/addCry', function (req, res) {
             });
         },
         function (result, callback) {
-            let newCry = {
-                'cryCount': req.body.cryNumber,
-                'reason': req.body.cryReason,
-                'visable': req.body.cryVisable == "on" ? true : false,
-                'date': new Date()
-            };
-            userModel.updateOne({ _id: req.session.user }, {
-                cry: newCry
-            }, function (err, result) {
+            let newCry = cryModel({
+                user: result._id,
+                cry: {
+                    'cryCount': req.body.cryNumber,
+                    'reason': req.body.cryReason,
+                    'visable': req.body.cryVisable == "on" ? true : false,
+                    'date': new Date()
+                }
+            });
+            newCry.save(function (err) {
                 if (!err) {
                     callback(null);
                 } else {
@@ -175,10 +179,48 @@ app.post('/addCry', function (req, res) {
                 console.log(err);
             }
             else {
-                res.send("Success");
+                res.render('cryCount');
             }
         }
     );
+});
+
+app.get('/cryCount', function (req, res) {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    } else {
+        async.waterfall([
+            function (callback) {
+                userModel.findOne({ _id: req.session.user }, function (err, result) {
+                    if (err || !result) {
+                        callback(err);
+                    } else {
+                        callback(null, result);
+                    }
+                });
+            },
+            function (result, callback) {
+                cryModel.find({ user: result._id }, function (err, result) {
+                    if (err || !result) {
+                        callback(err);
+                    } else {
+                        callback(null, result);
+                    }
+                });
+
+            },
+            function (result, callback) {
+                res.render('cryCount',
+                    { cryInfo: result});
+                callback(null);
+            }
+        ],
+            function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+    }
 });
 
 http.listen(3000, () => {
