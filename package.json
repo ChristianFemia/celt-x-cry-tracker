@@ -1,0 +1,19 @@
+{
+  "name": "celt-x-cry-tracker",
+  "version": "1.0.0",
+  "description": "we're robot kids. we need to track our crying.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChristianFemia/celt-x-cry-tracker.git"
+  },
+  "author": "ChristianFemia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChristianFemia/celt-x-cry-tracker/issues"
+  },
+  "homepage": "https://github.com/ChristianFemia/celt-x-cry-tracker#readme"
+}
