@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/ChristianFemia/celt-x-cry-tracker/issues"
   },
-  "homepage": "https://github.com/ChristianFemia/celt-x-cry-tracker#readme"
+  "homepage": "https://github.com/ChristianFemia/celt-x-cry-tracker#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "http": "0.0.1-security",
+    "mongoose": "^6.6.3",
+    "pug": "^3.0.2"
+  }
 }
