@@ -4,6 +4,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const http = require('http').createServer(app);
 var crypto = require('crypto');
+var async = require('async');
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -36,8 +37,14 @@ const userSchema = mongoose.Schema({
         }
     },
     password: String,
-    cryCount: String
+    cry: {
+        cryCount: String,
+        reason: String,
+        visable: Boolean,
+        date: Date
+    }
 });
+
 
 var userModel = mongoose.model('users', userSchema);
 
@@ -121,6 +128,57 @@ app.post('/register', function (req, res) {
         }
     })
 
+});
+
+app.get('/addCry', function (req, res) {
+    console.log(req.session.user);
+    if (!req.session.user) {
+        return res.redirect('/login');
+    } else {
+        res.render('addCry');
+    }
+});
+
+app.post('/addCry', function (req, res) {
+    console.log(req.body);
+
+    async.waterfall([
+        function (callback) {
+            userModel.findOne({ _id: req.session.user }, function (err, result) {
+                if (err || !result) {
+                    callback(err);
+                } else {
+                    callback(null, result);
+                }
+            });
+        },
+        function (result, callback) {
+            let newCry = {
+                'cryCount': req.body.cryNumber,
+                'reason': req.body.cryReason,
+                'visable': req.body.cryVisable == "on" ? true : false,
+                'date': new Date()
+            };
+            userModel.updateOne({ _id: req.session.user }, {
+                cry: newCry
+            }, function (err, result) {
+                if (!err) {
+                    callback(null);
+                } else {
+                    callback(err);
+                    console.log(err);
+                }
+            });
+        }],
+        function (err) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                res.send("Success");
+            }
+        }
+    );
 });
 
 http.listen(3000, () => {
