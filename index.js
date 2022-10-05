@@ -43,8 +43,6 @@ const crySchema = new mongoose.Schema({
     user: ObjectId,
     cry: {
         cryCount: String,
-        reason: String,
-        visable: Boolean,
         date: Date
     }
 });
@@ -160,8 +158,6 @@ app.post('/addCry', function (req, res) {
                 user: result._id,
                 cry: {
                     'cryCount': req.body.cryNumber,
-                    'reason': req.body.cryReason,
-                    'visable': req.body.cryVisable == "on" ? true : false,
                     'date': new Date()
                 }
             });
@@ -199,19 +195,22 @@ app.get('/cryCount', function (req, res) {
                     }
                 });
             },
-            function (result, callback) {
-                cryModel.find({ user: result._id }, function (err, result) {
-                    if (err || !result) {
+            function (userID, callback) {
+                cryModel.find({ user: userID._id }, function (err, cryCount) {
+                    if (err || !cryCount) {
                         callback(err);
                     } else {
-                        callback(null, result);
+                        callback(null, cryCount, userID);
                     }
                 });
 
             },
-            function (result, callback) {
+            function (result, userID, callback) {
                 res.render('cryCount',
-                    { cryInfo: result});
+                    { 
+                        cryInfo: result,
+                        username: userID.username
+                    });
                 callback(null);
             }
         ],
