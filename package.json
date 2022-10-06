@@ -17,13 +17,11 @@
   },
   "homepage": "https://github.com/ChristianFemia/celt-x-cry-tracker#readme",
   "dependencies": {
-    "async": "^3.2.4",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
-    "crypto": "^1.0.1",
     "express": "^4.18.1",
     "express-session": "^1.17.3",
     "http": "0.0.1-security",
-    "lodash": "^4.17.21",
     "mongoose": "^6.6.3",
     "pug": "^3.0.2"
   }
