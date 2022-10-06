@@ -1,14 +1,13 @@
 extends layout-main
 
-block head
-
-block navbar
-
 block content
   .wrapper
   center
     h2 Celt-X Total Cries
     ol#count
+  center
+    h2#username
+    ol#countUser
 
 block scripts
   script(type='text/javascript').
@@ -19,6 +18,14 @@ block scripts
           for(var i = 1; i<=json.totalCries; i++){
         $('#count').append('<li id="ticks"></li>');
     }
+    });
+    $.when(
+      $.getJSON('/totalCries?user=true')
+    ).done(function(json) {
+          for(var i = 1; i<=json.totalCries; i++){
+        $('#countUser').append('<li id="ticks"></li>');
+    }
+    $("#username").text(json.username + " Cries:")
     })
     });
 

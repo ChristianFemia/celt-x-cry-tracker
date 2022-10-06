@@ -40,10 +40,8 @@ const userSchema = mongoose.Schema({
 
 const crySchema = new mongoose.Schema({
     user: ObjectId,
-    cry: {
-        cryCount: Number,
-        date: Date
-    }
+    cry: Number,
+    date: Date
 });
 
 var userModel = mongoose.model('users', userSchema);
@@ -121,6 +119,9 @@ app.post('/register', async function (req, res) {
     userModel.find({
         username: req.body.username
     }, function (err, users) {
+        if (err) {
+            res.send("error registering");
+        }
         if (!users.length) {
             user.save(function (err) {
                 res.redirect('/login');
@@ -142,52 +143,36 @@ app.get('/addCry', function (req, res) {
 app.post('/addCry', function (req, res) {
     let newCry = cryModel({
         user: req.session.user,
-        cry: {
-            'cryCount': 1,
-            'date': new Date()
-        }
+        cry: 1,
+        date: new Date()
     });
+
     newCry.save(function (err) {
         if (!err) {
-            res.redirect('cryCount');
+            res.redirect('/');
         } else {
             res.send('error saving data to database. please try again later.')
         }
     });
 });
 
-app.get('/usercries', function (req, res) {
-    cryModel.count({ user: req.session.user }, function (err, count) {
-        if (err) {
-            res.json({});
-        } else {
-            res.json({
-                username: req.session.username,
-                totalCries: count
-            })
-        }
-    });
-});
-
 app.get('/totalcries', function (req, res) {
-    cryModel.count({}, function (err, count) {
+    let query = {};
+    let retVal = {};
+    if(req.query && req.query.user){
+        query  ={ user: req.session.user };
+        retVal = {username: req.session.username}
+    }
+    cryModel.count(query, function (err, count) {
         if (err) {
             res.json({});
         } else {
-            res.json({
-                totalCries: count
-            })
+            retVal.totalCries = count;
+            res.json(retVal)
         }
     });
 });
 
-app.get('/cryCount', function (req, res) {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    } else {
-        res.render('cryCount');
-    }
-});
 
 
 http.listen(3000, () => {
