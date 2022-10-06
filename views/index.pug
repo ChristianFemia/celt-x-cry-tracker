@@ -3,7 +3,7 @@ extends layout-main
 block content
   .wrapper
   center
-    h2 Celt-X Total Cries
+    h2#title
     ol#count
   center
     h2#username
@@ -12,20 +12,22 @@ block content
 block scripts
   script(type='text/javascript').
     $(document).ready( function () {
+      let jsonUrl = "";
+      let title = "";
+      if(window.location.search == "?user=true"){
+        jsonUrl = '/totalCries?user=true';
+      } else {
+        jsonUrl = '/totalCries' 
+        title = "Celt-X Cries";
+      }
     $.when(
-      $.getJSON('/totalCries')
+      $.getJSON(jsonUrl)
     ).done(function(json) {
           for(var i = 1; i<=json.totalCries; i++){
         $('#count').append('<li id="ticks"></li>');
     }
+    $("#title").text(title == "" ? json.username + " Cries:" : title+ " Cries:")
     });
-    $.when(
-      $.getJSON('/totalCries?user=true')
-    ).done(function(json) {
-          for(var i = 1; i<=json.totalCries; i++){
-        $('#countUser').append('<li id="ticks"></li>');
-    }
-    $("#username").text(json.username + " Cries:")
-    })
+  
     });
 

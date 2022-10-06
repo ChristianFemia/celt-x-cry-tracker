@@ -40,7 +40,6 @@ const userSchema = mongoose.Schema({
 
 const crySchema = new mongoose.Schema({
     user: ObjectId,
-    cry: Number,
     date: Date
 });
 
@@ -143,7 +142,6 @@ app.get('/addCry', function (req, res) {
 app.post('/addCry', function (req, res) {
     let newCry = cryModel({
         user: req.session.user,
-        cry: 1,
         date: new Date()
     });
 
