@@ -18,7 +18,7 @@ block scripts
         jsonUrl = '/totalCries?user=true';
       } else {
         jsonUrl = '/totalCries' 
-        title = "Celt-X Cries";
+        title = "Celt-X Cries:";
       }
     $.when(
       $.getJSON(jsonUrl)
@@ -26,7 +26,7 @@ block scripts
           for(var i = 1; i<=json.totalCries; i++){
         $('#count').append('<li id="ticks"></li>');
     }
-    $("#title").text(title == "" ? json.username + " Cries:" : title+ " Cries:")
+    $("#title").text(title == "" ? json.username + " Cries:" : title)
     });
   
     });
