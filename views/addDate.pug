@@ -1,0 +1,30 @@
+extends layout-main
+
+block content
+  .wrapper
+  form.form-signin(action='/addDate' method='post')
+    h2
+      center Add Dates
+    .form-group
+      input(type='text' name='startDate' value='')
+      input(type='text' name='endDate' value='')
+      button.btn.btn-primary.btn-block(type='submit') Add
+
+block scripts
+  script(type='text/javascript').
+     $(document).ready( function () {
+      $('input[name="startDate"]').daterangepicker({
+       singleDatePicker: true,
+       showDropdowns: true,
+       minYear: 1901,
+       maxYear: parseInt(moment().format('YYYY'),10)
+     });
+
+     $('input[name="endDate"]').daterangepicker({
+       singleDatePicker: true,
+       showDropdowns: true,
+       minYear: 1901,
+       maxYear: parseInt(moment().format('YYYY'),10)
+     });
+       });
+    

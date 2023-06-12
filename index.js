@@ -18,9 +18,8 @@ app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'pug');
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/cry-count', {
-    useNewUrlParser: true,
-});
+mongoose.connect('mongodb://127.0.0.1:27017/cottage-tracker', {
+    useNewUrlParser: true,});
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -38,13 +37,15 @@ const userSchema = mongoose.Schema({
     password: String
 });
 
-const crySchema = new mongoose.Schema({
+const dateSchema = new mongoose.Schema({
     user: ObjectId,
-    date: Date
+    title: String,
+    start: Date,
+    end: Date
 });
 
 var userModel = mongoose.model('users', userSchema);
-var cryModel = mongoose.model('cry', crySchema)
+var cryModel = mongoose.model('dates', dateSchema)
 
 app.get('/', function (req, res) {
     if (!req.session.user) {
@@ -131,21 +132,25 @@ app.post('/register', async function (req, res) {
     })
 });
 
-app.get('/addCry', function (req, res) {
+app.get('/addDate', function (req, res) {
     if (!req.session.user) {
         return res.redirect('/login');
     } else {
-        res.render('addCry');
+        console.log(req.session);
+        res.render('addDate');
     }
 });
 
-app.post('/addCry', function (req, res) {
-    let newCry = cryModel({
+app.post('/addDate', function (req, res) {
+    console.log(req.session.username);
+    let newDate = cryModel({
         user: req.session.user,
-        date: new Date()
+        title: req.session.username + ' Family',
+        start: req.body.startDate,
+        end: req.body.endDate
     });
 
-    newCry.save(function (err) {
+    newDate.save(function (err) {
         if (!err) {
             res.redirect('/');
         } else {
@@ -154,18 +159,18 @@ app.post('/addCry', function (req, res) {
     });
 });
 
-app.get('/totalcries', function (req, res) {
+app.get('/getDates', function (req, res) {
     let query = {};
     let retVal = {};
     if(req.query && req.query.user){
         query  ={ user: req.session.user };
         retVal = {username: req.session.username}
     }
-    cryModel.count(query, function (err, count) {
+    cryModel.find(query, function (err, date) {
         if (err) {
             res.json({});
         } else {
-            retVal.totalCries = count;
+            retVal.date = date;
             res.json(retVal)
         }
     });
